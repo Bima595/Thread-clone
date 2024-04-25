@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-// import TalkInput from '../components/TalkInput';
+import TalkInput from '../components/ChatInput';
 import TalksList from '../components/ChatList';
 import { asyncPopulateUsersAndTalks } from '../states/shared/action';
-import { asyncToogleLikeTalk } from '../states/talks/action';
+import { asyncAddTalk, asyncToogleLikeTalk } from '../states/talks/action';
  
 function HomePage() {
   const {
@@ -14,15 +14,14 @@ function HomePage() {
  
   const dispatch = useDispatch();
  
-  useMemo(() => {
+  useEffect(() => {
  
     dispatch(asyncPopulateUsersAndTalks());
   }, [dispatch]);
  
-//   const onAddTalk = (text) => {
-//     // @TODO: dispatch async action to add talk
-//     dispatch(asyncAddTalk({ text }));
-//   };
+  const onAddTalk = (text) => {
+    dispatch(asyncAddTalk({ text }));
+  };
  
   const onLike = (id) => {
  
@@ -37,7 +36,7 @@ function HomePage() {
  
   return (
     <section className="home-page">
-      {/* <TalkInput addTalk={onAddTalk} /> */}
+      <TalkInput addTalk={onAddTalk} />
       <TalksList talks={talkList} like={onLike} />
     </section>
   );

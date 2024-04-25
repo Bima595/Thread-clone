@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FaRegHeart, FaHeart } from 'react-icons/fa';
+import { FaRegHeart, FaHeart, FaReply } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { postedAt } from '../utils';
 
@@ -53,6 +53,7 @@ function TalkItem({
                 </button>
                 {' '}
                 {likes.length}
+                <FaReply />
               </p>
             </div>
           )
