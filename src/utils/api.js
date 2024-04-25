@@ -1,196 +1,355 @@
 const api = (() => {
-    const BASE_URL = 'https://openspace-api.netlify.app/v1';
-  
-    async function _fetchWithAuth(url, options = {}) {
-      return fetch(url, {
-        ...options,
+  const BASE_URL = "https://forum-api.dicoding.dev/v1";
+
+  async function _fetchWithAuth(url, options = {}) {
+    return fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    });
+  }
+
+  function putAccessToken(token) {
+    localStorage.setItem("accessToken", token);
+  }
+
+  function getAccessToken() {
+    return localStorage.getItem("accessToken");
+  }
+
+  async function register({ email, name, password }) {
+    const response = await fetch(`${BASE_URL}/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        name,
+        password,
+      }),
+    });
+
+    const responseJson = await response.json();
+    const { status, message } = responseJson;
+
+    if (status !== "success") {
+      throw new Error(message);
+    }
+
+    const {
+      data: { user },
+    } = responseJson;
+
+    return user;
+  }
+
+  async function login({ email, password }) {
+    const response = await fetch(`${BASE_URL}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    });
+
+    const responseJson = await response.json();
+
+    const { status, message } = responseJson;
+
+    if (status !== "success") {
+      throw new Error(message);
+    }
+
+    const {
+      data: { token },
+    } = responseJson;
+
+    return token;
+  }
+
+  async function getOwnProfile() {
+    const response = await _fetchWithAuth(`${BASE_URL}/users/me`);
+
+    const responseJson = await response.json();
+
+    const { status, message } = responseJson;
+
+    if (status !== "success") {
+      throw new Error(message);
+    }
+
+    const {
+      data: { user },
+    } = responseJson;
+
+    return user;
+  }
+
+  async function getAllUsers() {
+    const response = await fetch(`${BASE_URL}/users`);
+
+    const responseJson = await response.json();
+
+    const { status, message } = responseJson;
+
+    if (status !== "success") {
+      throw new Error(message);
+    }
+
+    const {
+      data: { users },
+    } = responseJson;
+
+    return users;
+  }
+
+  async function getUserById(id) {
+    const allUsers = await getAllUsers();
+    const user = await allUsers.find((user) => user.id === id);
+    return user;
+  }
+
+  async function getAllTalks() {
+    const response = await fetch(`${BASE_URL}/threads`);
+    const responseJson = await response.json();
+
+    const { status, message } = responseJson;
+
+    if (status !== "success") {
+      throw new Error(message);
+    }
+
+    const {
+      data: { threads },
+    } = responseJson;
+
+    const threadsWithOwners = await Promise.all(
+      threads.map(async (thread) => {
+        const owner = await getUserById(thread.ownerId);
+        return { ...thread, ownerData: owner };
+      })
+    );
+
+    const talks = threadsWithOwners;
+    return talks;
+  }
+
+  async function getTalkDetail(id) {
+    const response = await fetch(`${BASE_URL}/threads/${id}`);
+
+    const responseJson = await response.json();
+
+    const { status, message } = responseJson;
+
+    if (status !== "success") {
+      throw new Error(message);
+    }
+
+    const {
+      data: { talkDetail },
+    } = responseJson;
+
+    return talkDetail;
+  }
+
+  async function createTalk({ text, replyTo = "" }) {
+    const response = await _fetchWithAuth(`${BASE_URL}/threads`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text,
+        replyTo,
+      }),
+    });
+
+    const responseJson = await response.json();
+
+    const { status, message } = responseJson;
+
+    if (status !== "success") {
+      throw new Error(message);
+    }
+
+    const {
+      data: { talk },
+    } = responseJson;
+
+    return talk;
+  }
+
+  // async function toggleLikeTalk(id) {
+  //   const response = await _fetchWithAuth(`${BASE_URL}/talks/likes`, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({
+  //       talkId: id,
+  //     }),
+  //   });
+
+  //   const responseJson = await response.json();
+
+  //   const { status, message } = responseJson;
+
+  //   if (status !== 'success') {
+  //     throw new Error(message);
+  //   }
+  // }
+
+  async function upVoteThread(threadId) {
+    const response = await _fetchWithAuth(
+      `${BASE_URL}/threads/${threadId}/up-vote`,
+      {
+        method: "POST",
+      }
+    );
+
+    const responseJson = await response.json();
+
+    const { status, message } = responseJson;
+
+    if (status !== "success") {
+      throw new Error(message);
+    }
+  }
+
+  async function downVoteThread(threadId) {
+    const response = await _fetchWithAuth(
+      `${BASE_URL}/threads/${threadId}/down-vote`,
+      {
+        method: "POST",
+      }
+    );
+
+    const responseJson = await response.json();
+
+    const { status, message } = responseJson;
+
+    if (status !== "success") {
+      throw new Error(message);
+    }
+  }
+
+  async function upVoteComment(threadId, commentId) {
+    const response = await _fetchWithAuth(
+      `${BASE_URL}/threads/${threadId}/comments/${commentId}/up-vote`,
+      {
+        method: "POST",
+      }
+    );
+
+    const responseJson = await response.json();
+
+    const { status, message } = responseJson;
+
+    if (status !== "success") {
+      throw new Error(message);
+    }
+  }
+
+  async function downVoteComment(threadId, commentId) {
+    const response = await _fetchWithAuth(
+      `${BASE_URL}/threads/${threadId}/comments/${commentId}/down-vote`,
+      {
+        method: "POST",
+      }
+    );
+
+    const responseJson = await response.json();
+
+    const { status, message } = responseJson;
+
+    if (status !== "success") {
+      throw new Error(message);
+    }
+  }
+
+  async function neutralVote(threadId) {
+    const response = await _fetchWithAuth(
+      `${BASE_URL}/threads/${threadId}/neutral-vote`,
+      {
+        method: "POST",
+      }
+    );
+
+    const responseJson = await response.json();
+
+    const { status, message } = responseJson;
+
+    if (status !== "success") {
+      throw new Error(message);
+    }
+  }
+
+  async function createComment(threadId, content) {
+    const response = await _fetchWithAuth(
+      `${BASE_URL}/threads/${threadId}/comments`,
+      {
+        method: "POST",
         headers: {
-          ...options.headers,
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      });
-    }
-  
-    function putAccessToken(token) {
-      localStorage.setItem('accessToken', token);
-    }
-  
-    function getAccessToken() {
-      return localStorage.getItem('accessToken');
-    }
-  
-    async function register({ id, name, password }) {
-      const response = await fetch(`${BASE_URL}/users`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id,
-          name,
-          password,
+          content,
         }),
-      });
-  
-      const responseJson = await response.json();
-      const { status, message } = responseJson;
-  
-      if (status !== 'success') {
-        throw new Error(message);
       }
-  
-      const { data: { user } } = responseJson;
-  
-      return user;
+    );
+
+    const responseJson = await response.json();
+
+    const { status, message } = responseJson;
+
+    if (status !== "success") {
+      throw new Error(message);
     }
-  
-    async function login({ id, password }) {
-      const response = await fetch(`${BASE_URL}/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id,
-          password,
-        }),
-      });
-  
-      const responseJson = await response.json();
-  
-      const { status, message } = responseJson;
-  
-      if (status !== 'success') {
-        throw new Error(message);
-      }
-  
-      const { data: { token } } = responseJson;
-  
-      return token;
+  }
+
+  async function getLeaderboards() {
+    const response = await fetch(`${BASE_URL}/leaderboards`);
+
+    const responseJson = await response.json();
+
+    const { status, message } = responseJson;
+
+    if (status !== "success") {
+      throw new Error(message);
     }
-  
-    async function getOwnProfile() {
-      const response = await _fetchWithAuth(`${BASE_URL}/users/me`);
-  
-      const responseJson = await response.json();
-  
-      const { status, message } = responseJson;
-  
-      if (status !== 'success') {
-        throw new Error(message);
-      }
-  
-      const { data: { user } } = responseJson;
-  
-      return user;
-    }
-  
-    async function getAllUsers() {
-      const response = await fetch(`${BASE_URL}/users`);
-  
-      const responseJson = await response.json();
-  
-      const { status, message } = responseJson;
-  
-      if (status !== 'success') {
-        throw new Error(message);
-      }
-  
-      const { data: { users } } = responseJson;
-  
-      return users;
-    }
-  
-    async function getAllTalks() {
-      const response = await fetch(`${BASE_URL}/talks`);
-  
-      const responseJson = await response.json();
-  
-      const { status, message } = responseJson;
-  
-      if (status !== 'success') {
-        throw new Error(message);
-      }
-  
-      const { data: { talks } } = responseJson;
-  
-      return talks;
-    }
-  
-    async function getTalkDetail(id) {
-      const response = await fetch(`${BASE_URL}/talks/${id}`);
-  
-      const responseJson = await response.json();
-  
-      const { status, message } = responseJson;
-  
-      if (status !== 'success') {
-        throw new Error(message);
-      }
-  
-      const { data: { talkDetail } } = responseJson;
-  
-      return talkDetail;
-    }
-  
-    async function createTalk({ text, replyTo = '' }) {
-      const response = await _fetchWithAuth(`${BASE_URL}/talks`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text,
-          replyTo,
-        }),
-      });
-  
-      const responseJson = await response.json();
-  
-      const { status, message } = responseJson;
-  
-      if (status !== 'success') {
-        throw new Error(message);
-      }
-  
-      const { data: { talk } } = responseJson;
-  
-      return talk;
-    }
-  
-    async function toggleLikeTalk(id) {
-      const response = await _fetchWithAuth(`${BASE_URL}/talks/likes`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          talkId: id,
-        }),
-      });
-  
-      const responseJson = await response.json();
-  
-      const { status, message } = responseJson;
-  
-      if (status !== 'success') {
-        throw new Error(message);
-      }
-    }
-  
-    return {
-      putAccessToken,
-      getAccessToken,
-      register,
-      login,
-      getOwnProfile,
-      getAllUsers,
-      getAllTalks,
-      createTalk,
-      toggleLikeTalk,
-      getTalkDetail,
-    };
-  })();
-  
-  export default api;
-  
+
+    const {
+      data: { leaderboards },
+    } = responseJson;
+
+    return leaderboards;
+  }
+
+  return {
+    putAccessToken,
+    getAccessToken,
+    register,
+    login,
+    getOwnProfile,
+    getAllUsers,
+    getUserById,
+    getAllTalks,
+    createTalk,
+    getLeaderboards,
+    createComment,
+    neutralVote,
+    downVoteComment,
+    upVoteComment,
+    getTalkDetail,
+    upVoteThread,
+    downVoteThread,
+  };
+})();
+
+export default api;

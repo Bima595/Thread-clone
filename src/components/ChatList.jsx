@@ -1,22 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import TalkItem, { talkItemShape } from './ChatItem';
+import PropTypes from "prop-types";
+import TalkItem from "./ChatItem";
 
-function TalksList({ talks, like }) {
+function TalksList({ body }) {
   return (
     <div className="talks-list">
-      {
-         talks.map((talk) => (
-           <TalkItem key={talk.id} {...talk} like={like} />
-         ))
-      }
+      {body.map((talk) => (
+        <TalkItem key={talk.id} talk={talk} />
+      ))}
     </div>
   );
 }
 
 TalksList.propTypes = {
-  talks: PropTypes.arrayOf(PropTypes.shape(talkItemShape)).isRequired,
-  like: PropTypes.func.isRequired,
+  body: PropTypes.array.isRequired,
 };
 
 export default TalksList;

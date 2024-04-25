@@ -8,8 +8,8 @@ import { asyncSetAuthUser } from '../states/authUser/action';
 function LoginPage() {
   const dispatch = useDispatch();
 
-  const onLogin = ({ id, password }) => {
-    dispatch(asyncSetAuthUser({ id, password }));
+  const onLogin = ({ email, password }) => {
+    dispatch(asyncSetAuthUser({ email, password }));
   };
 
   return (

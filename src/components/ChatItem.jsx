@@ -1,92 +1,137 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { FaRegHeart, FaHeart, FaReply } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import { postedAt } from '../utils';
+import PropTypes from "prop-types";
+import React from "react";
+import { FaThumbsUp, FaThumbsDown, FaReply } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import api from "../utils/api";
 
-function TalkItem({
-  id, text, createdAt, likes, user, authUser, like,
-}) {
+function TalkItem({ talk, ...props }) {
+  const isUserLike = talk.upVotesBy.includes(talk.authUser);
+  const isUserDislike = talk.downVotesBy.includes(talk.authUser);
+
+  const likeCount = talk.upVotesBy.length;
+  const dislikeCount = talk.downVotesBy.length;
+
+  const [isLiked, setIsLiked] = React.useState(isUserLike);
+  const [isDisliked, setIsDisliked] = React.useState(isUserDislike);
+  const [isNeutral, setIsNeutral] = React.useState(
+    !isUserLike && !isUserDislike
+  );
+
   const navigate = useNavigate();
-  const isTalkLiked = likes.includes(authUser);
 
-  const onLikeClick = (event) => {
+  const onVoteClickHandler = async (btn, event) => {
     event.stopPropagation();
-    like(id);
-  };
-
-  const onTalkClick = () => {
-    navigate(`/talks/${id}`);
-  };
-
-  const onTalkPress = (event) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      navigate(`/talks/${id}`);
+    try {
+      if (!isNeutral && isLiked && !isDisliked && btn === "like") {
+        await api.neutralVote(talk.id);
+        setIsNeutral(true);
+        setIsLiked(false);
+        setIsDisliked(false);
+      } else if (!isNeutral && !isLiked && isDisliked && btn === "dislike") {
+        await api.neutralVote(talk.id);
+        setIsNeutral(true);
+        setIsLiked(false);
+        setIsDisliked(false);
+      } else if (isNeutral && btn === "like") {
+        await api.upVoteThread(talk.id);
+        setIsLiked(true);
+        setIsDisliked(false);
+        setIsNeutral(false);
+      } else if (isNeutral && btn === "dislike") {
+        await api.downVoteThread(talk.id);
+        setIsLiked(false);
+        setIsDisliked(true);
+        setIsNeutral(false);
+      } else if (!isNeutral && isDisliked && !isLiked && btn === "like") {
+        await api.upVoteThread(talk.id);
+        setIsLiked(true);
+        setIsDisliked(false);
+        setIsNeutral(false);
+      } else if (!isNeutral && !isDisliked && isLiked && btn === "dislike") {
+        await api.downVoteThread(talk.id);
+        setIsLiked(false);
+        setIsDisliked(true);
+        setIsNeutral(false);
+      }
+    } catch (error) {
+      console.error("Failed to like/dislike talk:", error);
     }
   };
 
+  const onTalkClick = () => {
+    navigate(`/threads/${talk.id}`);
+  };
+
+  const onTalkPress = (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      navigate(`/threads/${talk.id}`);
+    }
+  };
+
+  console.log();
   return (
-    <div role="button" tabIndex={0} className="talk-item" onClick={onTalkClick} onKeyDown={onTalkPress}>
+    <div
+      key={talk.id}
+      role="button"
+      tabIndex={0}
+      className="talk-item"
+      // onClick={onTalkClick}
+      // onKeyDown={onTalkPress}
+      {...props}
+    >
       <div className="talk-item__user-photo">
-        <img src={user.photo} alt={user} />
+        <img src={talk.ownerData.avatar} alt={talk.ownerData.avatar} />
       </div>
       <div className="talk-item__detail">
         <header>
           <div className="talk-item__user-info">
-            <p className="talk-item__user-name">{user.name}</p>
-            <p className="talk-item__user-id">
-              @
-              {user.id}
-            </p>
+            <p className="talk-item__user-name">{talk.ownerData.name}</p>
+            <p className="talk-item__user-id">{talk.ownerData.email}</p>
           </div>
-          <p className="talk-item__created-at">{postedAt(createdAt)}</p>
+          <p className="talk-item__created-at">{talk.createdAt}</p>
         </header>
         <article>
-          <p className="talk-item__text">{text}</p>
+          <h2>{talk.title}</h2>
+          <p className="talk-item__text">{talk.body}</p>
+          <p>Category: {talk.category}</p>
         </article>
-        {
-          like && (
-            <div className="talk-item__likes">
-              <p>
-                <button type="button" aria-label="like" onClick={onLikeClick}>
-                  { isTalkLiked ? <FaHeart style={{ color: 'red' }} /> : <FaRegHeart />}
-                </button>
-                {' '}
-                {likes.length}
-                <FaReply />
-              </p>
-            </div>
-          )
-        }
+
+        <div className="talk-item__likes">
+          <p>
+            <button
+              type="button"
+              aria-label="like"
+              onClick={() => onVoteClickHandler("like", event)}
+            >
+              <FaThumbsUp
+                style={{
+                  color: isLiked && !isNeutral ? "blue" : "gray",
+                }}
+              />
+              <span>{likeCount}</span>
+            </button>{" "}
+            <button
+              type="button"
+              aria-label="dislike"
+              onClick={() => onVoteClickHandler("dislike", event)}
+            >
+              <FaThumbsDown
+                style={{
+                  color: isDisliked && !isNeutral ? "blue" : "gray",
+                }}
+              />
+              <span>{dislikeCount}</span>
+            </button>
+            <FaReply /> {talk.totalComments}
+          </p>
+        </div>
       </div>
     </div>
   );
 }
 
-const userShape = {
-  id: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  photo: PropTypes.string.isRequired,
-};
-
-const talkItemShape = {
-  id: PropTypes.string.isRequired,
-  text: PropTypes.string.isRequired,
-  createdAt: PropTypes.string.isRequired,
-  likes: PropTypes.arrayOf(PropTypes.string).isRequired,
-  authUser: PropTypes.string.isRequired,
-  user: PropTypes.shape(userShape).isRequired,
-};
-
 TalkItem.propTypes = {
-  ...talkItemShape,
-  like: PropTypes.func,
+  talk: PropTypes.object,
 };
-
-TalkItem.defaultProps = {
-  like: null,
-};
-
-export { talkItemShape };
 
 export default TalkItem;
