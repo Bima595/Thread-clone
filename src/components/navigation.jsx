@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { IoHome, IoMedal } from 'react-icons/io5'; // Import IoMedal untuk ikon leaderboard
+import { IoHome, IoMedal } from 'react-icons/io5'; 
 
 function Navigation({ authUser, signOut }) {
   const { id, photo, name } = authUser;
@@ -11,7 +11,7 @@ function Navigation({ authUser, signOut }) {
       <img src={photo} alt={id} title={name} />
       <nav>
         <Link to="/"><IoHome /></Link>
-        <Link to="/leaderboard"><IoMedal /></Link> {/* Tautan untuk leaderboard */}
+        <Link to="/leaderboard"><IoMedal /></Link> 
       </nav>
       <button type="button" onClick={signOut}>Sign out</button>
     </div>
