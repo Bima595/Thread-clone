@@ -1,19 +1,23 @@
 import PropTypes from "prop-types";
-import React from "react";
+import { useState } from "react";
 import { FaThumbsUp, FaThumbsDown, FaReply } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { formatDistanceToNow } from 'date-fns'; // Import function formatDistanceToNow from date-fns
 import api from "../utils/api";
 
 function TalkItem({ talk, authUser, ...props }) {
   const isUserLike = talk?.upVotesBy?.includes(authUser);
   const isUserDislike = talk?.downVotesBy?.includes(authUser);
-  const likeCount = talk?.upVotesBy?.length ?? 0;
-  const dislikeCount = talk?.downVotesBy?.length ?? 0;
-
-  const [isLiked, setIsLiked] = React.useState(isUserLike);
-  const [isDisliked, setIsDisliked] = React.useState(isUserDislike);
-  const [isNeutral, setIsNeutral] = React.useState(
-    !isUserLike && !isUserDislike
+  const [likeCount, setLikeCount] = useState(talk?.upVotesBy?.length ?? 0);
+  const [dislikeCount, setDislikeCount] = useState(talk?.downVotesBy?.length ?? 0);
+  const [isLiked, setIsLiked] = useState(
+    isUserLike || localStorage.getItem(`liked_${talk.id}`) === "true"
+  );
+  const [isDisliked, setIsDisliked] = useState(
+    isUserDislike || localStorage.getItem(`disliked_${talk.id}`) === "true"
+  );
+  const [isNeutral, setIsNeutral] = useState(
+    !isUserLike && !isUserDislike && localStorage.getItem(`liked_${talk.id}`) !== "true" && localStorage.getItem(`disliked_${talk.id}`) !== "true"
   );
 
   const navigate = useNavigate();
@@ -22,35 +26,51 @@ function TalkItem({ talk, authUser, ...props }) {
     event.stopPropagation();
     try {
       if (!isNeutral && isLiked && !isDisliked && btn === "like") {
-        await api.neutralizeThreadVote(talk.id);
+        await api.neutralVote(talk.id);
         setIsNeutral(true);
         setIsLiked(false);
         setIsDisliked(false);
+        localStorage.removeItem(`liked_${talk.id}`);
+        setLikeCount(likeCount - 1);
       } else if (!isNeutral && !isLiked && isDisliked && btn === "dislike") {
-        await api.neutralizeThreadVote(talk.id);
+        await api.neutralVote(talk.id);
         setIsNeutral(true);
         setIsLiked(false);
         setIsDisliked(false);
+        localStorage.removeItem(`disliked_${talk.id}`);
+        setDislikeCount(dislikeCount - 1);
       } else if (isNeutral && btn === "like") {
         await api.upVoteThread(talk.id);
         setIsLiked(true);
         setIsDisliked(false);
         setIsNeutral(false);
+        localStorage.setItem(`liked_${talk.id}`, "true");
+        setLikeCount(likeCount + 1);
       } else if (isNeutral && btn === "dislike") {
         await api.downVoteThread(talk.id);
         setIsLiked(false);
         setIsDisliked(true);
         setIsNeutral(false);
+        localStorage.setItem(`disliked_${talk.id}`, "true");
+        setDislikeCount(dislikeCount + 1);
       } else if (!isNeutral && isDisliked && !isLiked && btn === "like") {
         await api.upVoteThread(talk.id);
         setIsLiked(true);
         setIsDisliked(false);
         setIsNeutral(false);
+        localStorage.setItem(`liked_${talk.id}`, "true");
+        localStorage.removeItem(`disliked_${talk.id}`);
+        setLikeCount(likeCount + 1);
+        setDislikeCount(dislikeCount - 1);
       } else if (!isNeutral && !isDisliked && isLiked && btn === "dislike") {
         await api.downVoteThread(talk.id);
         setIsLiked(false);
         setIsDisliked(true);
         setIsNeutral(false);
+        localStorage.setItem(`disliked_${talk.id}`, "true");
+        localStorage.removeItem(`liked_${talk.id}`);
+        setDislikeCount(dislikeCount + 1);
+        setLikeCount(likeCount - 1);
       }
     } catch (error) {
       console.error("Failed to like/dislike talk:", error);
@@ -62,12 +82,15 @@ function TalkItem({ talk, authUser, ...props }) {
       navigate(`/threads/${talk.id}`);
     }
   };
-  
+
   const keyPressHandler = (event) => {
     if ((event.key === "Enter" || event.key === " ") && talk && talk.id) {
       navigate(`/threads/${talk.id}`);
     }
   };
+
+  // Format createdAt using formatDistanceToNow from date-fns
+  const createdAtFormatted = formatDistanceToNow(new Date(talk?.createdAt), { addSuffix: true });
 
   return (
     <div
@@ -88,7 +111,7 @@ function TalkItem({ talk, authUser, ...props }) {
             <p className="talk-item__user-name">{talk?.owner?.name}</p>
             <p className="talk-item__user-id">{talk?.owner?.email}</p>
           </div>
-          <p className="talk-item__created-at">{talk?.createdAt}</p>
+          <p className="talk-item__created-at">{createdAtFormatted}</p> {/* Use formatted createdAt */}
         </header>
         <article>
           <h2>{talk?.title}</h2>
@@ -101,7 +124,10 @@ function TalkItem({ talk, authUser, ...props }) {
             <button
               type="button"
               aria-label="like"
-              onClick={() => onVoteClickHandler("like", event)}
+              onClick={(event) => {
+                event.stopPropagation();
+                onVoteClickHandler("like", event);
+              }}
             >
               <FaThumbsUp
                 style={{
@@ -113,7 +139,10 @@ function TalkItem({ talk, authUser, ...props }) {
             <button
               type="button"
               aria-label="dislike"
-              onClick={() => onVoteClickHandler("dislike", event)}
+              onClick={(event) => {
+                event.stopPropagation();
+                onVoteClickHandler("dislike", event);
+              }}
             >
               <FaThumbsDown
                 style={{

@@ -1,22 +1,23 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { FaThumbsUp, FaThumbsDown, FaReply } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
+import { formatDistanceToNow } from 'date-fns';
 
-function ChatDetail({ chat, authUser, ...props }) {
+function ChatDetail({ thread, authUser, ...props }) {
   const isUserLike =
-    chat && chat.upVotesBy ? chat.upVotesBy.includes(authUser) : false;
+    thread && thread.upVotesBy ? thread.upVotesBy.includes(authUser) : false;
   const isUserDislike =
-    chat && chat.downVotesBy ? chat.downVotesBy.includes(authUser) : false;
-  const likeCount = chat && chat.upVotesBy ? chat.upVotesBy.length : 0;
-  const dislikeCount = chat && chat.downVotesBy ? chat.downVotesBy.length : 0;
-  const ownerData = chat && chat.ownerData ? chat.ownerData : { name: "", email: "", avatar: "" };
-  const createdAt = chat && chat.createdAt ? chat.createdAt : "";
-  const title = chat && chat.title ? chat.title : "";
-  const body = chat && chat.body ? chat.body : "";
-  const category = chat && chat.category ? chat.category : "";
-  const totalComments = chat && chat.totalComments ? chat.totalComments : 0;
+    thread && thread.downVotesBy ? thread.downVotesBy.includes(authUser) : false;
+  const likeCount = thread && thread.upVotesBy ? thread.upVotesBy.length : 0;
+  const dislikeCount = thread && thread.downVotesBy ? thread.downVotesBy.length : 0;
+  const ownerData = thread && thread.ownerData ? thread.ownerData : { name: "", email: "", avatar: "" };
+  const createdAt = thread && thread.createdAt ? thread.createdAt : "";
+  const title = thread && thread.title ? thread.title : "";
+  const body = thread && thread.body ? thread.body : "";
+  const category = thread && thread.category ? thread.category : "";
+  const totalComments = thread && thread.totalComments ? thread.totalComments : 0;
+  const createdAtText = formatDistanceToNow(new Date(createdAt), { addSuffix: true });
 
   
   const [isLiked, setIsLiked] = React.useState(isUserLike);
@@ -25,65 +26,52 @@ function ChatDetail({ chat, authUser, ...props }) {
     !isUserLike && !isUserDislike
   );
 
-  const navigate = useNavigate();
 
-  const onVoteClickHandler = async (btn, event) => {
-    event.stopPropagation();
+
+  const onVoteClickHandler = async (btn) => {
     try {
       if (!isNeutral && isLiked && !isDisliked && btn === "like") {
-        await api.neutralVote(chat.id);
+        await api.neutralVote(thread.id);
         setIsNeutral(true);
         setIsLiked(false);
         setIsDisliked(false);
       } else if (!isNeutral && !isLiked && isDisliked && btn === "dislike") {
-        await api.neutralVote(chat.id);
+        await api.neutralVote(thread.id);
         setIsNeutral(true);
         setIsLiked(false);
         setIsDisliked(false);
       } else if (isNeutral && btn === "like") {
-        await api.upVoteThread(chat.id);
+        await api.upVoteThread(thread.id);
         setIsLiked(true);
         setIsDisliked(false);
         setIsNeutral(false);
       } else if (isNeutral && btn === "dislike") {
-        await api.downVoteThread(chat.id);
+        await api.downVoteThread(thread.id);
         setIsLiked(false);
         setIsDisliked(true);
         setIsNeutral(false);
       } else if (!isNeutral && isDisliked && !isLiked && btn === "like") {
-        await api.upVoteThread(chat.id);
+        await api.upVoteThread(thread.id);
         setIsLiked(true);
         setIsDisliked(false);
         setIsNeutral(false);
       } else if (!isNeutral && !isDisliked && isLiked && btn === "dislike") {
-        await api.downVoteThread(chat.id);
+        await api.downVoteThread(thread.id);
         setIsLiked(false);
         setIsDisliked(true);
         setIsNeutral(false);
       }
     } catch (error) {
-      console.error("Failed to like/dislike chat:", error);
+      console.error("Failed to like/dislike thread:", error);
     }
   };
 
-  const onChatClick = () => {
-    navigate(`/chats/${chat.id}`);
-  };
 
-  const onChatPress = (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      navigate(`/chats/${chat.id}`);
-    }
-  };
 
   return (
     <div
-      key={chat && chat.id}
-      role="button"
-      tabIndex={0}
+      key={thread && thread.id}
       className="chat-item"
-      onClick={onChatClick}
-      onKeyDown={onChatPress}
       {...props}
     >
       <div className="chat-item__user-photo">
@@ -95,7 +83,7 @@ function ChatDetail({ chat, authUser, ...props }) {
             <p className="chat-item__user-name">{ownerData.name}</p>
             <p className="chat-item__user-id">{ownerData.email}</p>
           </div>
-          <p className="chat-item__created-at">{createdAt}</p>
+          <p className="chat-item__created-at">{createdAtText}</p>
         </header>
         <article>
           <h2>{title}</h2>
@@ -108,7 +96,7 @@ function ChatDetail({ chat, authUser, ...props }) {
             <button
               type="button"
               aria-label="like"
-              onClick={() => onVoteClickHandler('like', event)}
+              onClick={() => onVoteClickHandler('like')}
             >
               <FaThumbsUp
                 style={{
@@ -120,7 +108,7 @@ function ChatDetail({ chat, authUser, ...props }) {
             <button
               type="button"
               aria-label="dislike"
-              onClick={() => onVoteClickHandler('dislike', event)}
+              onClick={() => onVoteClickHandler('dislike')}
             >
               <FaThumbsDown
                 style={{
@@ -129,7 +117,14 @@ function ChatDetail({ chat, authUser, ...props }) {
               />
               <span>{dislikeCount}</span>
             </button>
-            <FaReply /> {totalComments}
+            <button
+              type="button"
+              aria-label="reply"
+              onClick={() => console.log("Reply clicked")} // Implement reply functionality here
+            >
+              <FaReply />
+            </button>
+            <span>{totalComments}</span>
           </p>
         </div>
       </div>
@@ -138,7 +133,7 @@ function ChatDetail({ chat, authUser, ...props }) {
 }
 
 ChatDetail.propTypes = {
-  chat: PropTypes.object,
+  thread: PropTypes.object,
   authUser: PropTypes.string.isRequired,
 };
 

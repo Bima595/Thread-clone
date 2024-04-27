@@ -3,7 +3,7 @@ import { ActionType } from "./action";
 function talkDetailReducer(detailThread = null, action = {}) {
   switch (action.type) {
     case ActionType.RECEIVE_TALK_DETAIL:
-      return action.payload.detailThread || null; // Memastikan nilai tidak null atau undefined
+      return action.payload.detailThread || null;
     case ActionType.CLEAR_TALK_DETAIL:
       return null;
     case ActionType.TOGGLE_LIKE_TALK_DETAIL:

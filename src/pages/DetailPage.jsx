@@ -1,21 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { asyncReceiveTalkDetail } from "../states/talkDetail/action";
 import { asyncAddTalk } from "../states/talks/action";
-import ChatItem  from "../components/ChatItem";
-import ChatDetail  from "../components/ChatDetail";
-import ChatReplyInput  from "../components/ChatReplyInput";
+import ChatDetail from "../components/ChatDetail";
+import ChatReplyInput from "../components/ChatReplyInput";
 
 function DetailPage() {
   const { id } = useParams();
-  console.log(id);
   const { detailThread, authUser } = useSelector((state) => state);
   const dispatch = useDispatch();
+  const [showComments, setShowComments] = useState(false);
 
   useEffect(() => {
     dispatch(asyncReceiveTalkDetail(id));
   }, [id, dispatch]);
+
+  const toggleComments = () => {
+    setShowComments(!showComments);
+  };
 
   return (
     <section className="detail-page">
@@ -23,15 +26,25 @@ function DetailPage() {
         <>
           <div className="detail-page__parent">
             <h3>Replying To</h3>
-            <ChatItem {...detailThread.talk} authUser={authUser.id} />
+            <ChatDetail thread={{ ...detailThread, comments: [] }} authUser={authUser} />
+            <ChatReplyInput replyTalk={(text) => dispatch(asyncAddTalk({ text, replyTo: id }))} />
           </div>
-          <ChatDetail {...detailThread} authUser={authUser.id} />
-          <ChatReplyInput replyTalk={(text) => dispatch(asyncAddTalk({ text, replyTo: id }))} />
+          <div className="detail-page__comments">
+            <button onClick={toggleComments}>
+              {showComments ? "Hide Comments" : "Show Comments"}
+            </button>
+            {showComments && (
+              <div className="detail-page__comments-list">
+                {detailThread.comments.map((comment) => (
+                  <ChatDetail key={comment.id} thread={comment} authUser={authUser} />
+                ))}
+              </div>
+            )}
+          </div>
         </>
       )}
     </section>
   );
 }
-
 
 export default DetailPage;
