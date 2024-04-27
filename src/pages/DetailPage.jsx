@@ -1,50 +1,37 @@
-import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import TalkDetail from '../components/TalkDetail';
-import TalkItem from '../components/TalkItem';
-import TalkReplyInput from '../components/TalkReplyInput';
-import { asyncReceiveTalkDetail, asyncToogleLikeTalkDetail } from '../states/talkDetail/action';
-import { asyncAddTalk } from '../states/talks/action';
- 
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { asyncReceiveTalkDetail } from "../states/talkDetail/action";
+import { asyncAddTalk } from "../states/talks/action";
+import ChatItem  from "../components/ChatItem";
+import ChatDetail  from "../components/ChatDetail";
+import ChatReplyInput  from "../components/ChatReplyInput";
+
 function DetailPage() {
   const { id } = useParams();
-  const {
-    talkDetail = null,
-    authUser,
-  } = useSelector((states) => states); 
-  const dispatch = useDispatch(); 
+  console.log(id);
+  const { detailThread, authUser } = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(asyncReceiveTalkDetail(id));
   }, [id, dispatch]);
- 
-  const onLikeTalk = () => {
-    dispatch(asyncToogleLikeTalkDetail());
-  };
- 
-  const onReplyTalk = (text) => {
-    dispatch(asyncAddTalk({ text, replyTo: id }));
-  };
- 
-  if (!talkDetail) {
-    return null;
-  }
- 
+
   return (
     <section className="detail-page">
-      {
-        talkDetail.parent && (
+      {detailThread && (
+        <>
           <div className="detail-page__parent">
             <h3>Replying To</h3>
-            <TalkItem {...talkDetail.parent} authUser={authUser.id} />
+            <ChatItem {...detailThread.talk} authUser={authUser.id} />
           </div>
-        )
-      }
-      <TalkDetail {...talkDetail} authUser={authUser.id} likeTalk={onLikeTalk} />
-      <TalkReplyInput replyTalk={onReplyTalk} />
+          <ChatDetail {...detailThread} authUser={authUser.id} />
+          <ChatReplyInput replyTalk={(text) => dispatch(asyncAddTalk({ text, replyTo: id }))} />
+        </>
+      )}
     </section>
   );
 }
- 
+
+
 export default DetailPage;

@@ -1,4 +1,4 @@
-import React from 'react';
+import 'react';
 import { IoFlowerOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';

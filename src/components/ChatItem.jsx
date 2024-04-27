@@ -4,12 +4,11 @@ import { FaThumbsUp, FaThumbsDown, FaReply } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
 
-function TalkItem({ talk, ...props }) {
-  const isUserLike = talk.upVotesBy.includes(talk.authUser);
-  const isUserDislike = talk.downVotesBy.includes(talk.authUser);
-
-  const likeCount = talk.upVotesBy.length;
-  const dislikeCount = talk.downVotesBy.length;
+function TalkItem({ talk, authUser, ...props }) {
+  const isUserLike = talk?.upVotesBy?.includes(authUser);
+  const isUserDislike = talk?.downVotesBy?.includes(authUser);
+  const likeCount = talk?.upVotesBy?.length ?? 0;
+  const dislikeCount = talk?.downVotesBy?.length ?? 0;
 
   const [isLiked, setIsLiked] = React.useState(isUserLike);
   const [isDisliked, setIsDisliked] = React.useState(isUserDislike);
@@ -23,12 +22,12 @@ function TalkItem({ talk, ...props }) {
     event.stopPropagation();
     try {
       if (!isNeutral && isLiked && !isDisliked && btn === "like") {
-        await api.neutralVote(talk.id);
+        await api.neutralizeThreadVote(talk.id);
         setIsNeutral(true);
         setIsLiked(false);
         setIsDisliked(false);
       } else if (!isNeutral && !isLiked && isDisliked && btn === "dislike") {
-        await api.neutralVote(talk.id);
+        await api.neutralizeThreadVote(talk.id);
         setIsNeutral(true);
         setIsLiked(false);
         setIsDisliked(false);
@@ -59,41 +58,42 @@ function TalkItem({ talk, ...props }) {
   };
 
   const onTalkClick = () => {
-    navigate(`/threads/${talk.id}`);
+    if (talk && talk.id) {
+      navigate(`/threads/${talk.id}`);
+    }
   };
-
-  const onTalkPress = (event) => {
-    if (event.key === "Enter" || event.key === " ") {
+  
+  const keyPressHandler = (event) => {
+    if ((event.key === "Enter" || event.key === " ") && talk && talk.id) {
       navigate(`/threads/${talk.id}`);
     }
   };
 
-  console.log();
   return (
     <div
-      key={talk.id}
+      key={talk?.id}
       role="button"
       tabIndex={0}
       className="talk-item"
-      // onClick={onTalkClick}
-      // onKeyDown={onTalkPress}
+      onClick={onTalkClick}
+      onKeyDown={keyPressHandler}
       {...props}
     >
       <div className="talk-item__user-photo">
-        <img src={talk.ownerData.avatar} alt={talk.ownerData.avatar} />
+        <img src={talk?.owner?.avatar} alt={talk?.owner?.avatar} />
       </div>
       <div className="talk-item__detail">
         <header>
           <div className="talk-item__user-info">
-            <p className="talk-item__user-name">{talk.ownerData.name}</p>
-            <p className="talk-item__user-id">{talk.ownerData.email}</p>
+            <p className="talk-item__user-name">{talk?.owner?.name}</p>
+            <p className="talk-item__user-id">{talk?.owner?.email}</p>
           </div>
-          <p className="talk-item__created-at">{talk.createdAt}</p>
+          <p className="talk-item__created-at">{talk?.createdAt}</p>
         </header>
         <article>
-          <h2>{talk.title}</h2>
-          <p className="talk-item__text">{talk.body}</p>
-          <p>Category: {talk.category}</p>
+          <h2>{talk?.title}</h2>
+          <p className="talk-item__text">{talk?.body}</p>
+          <p>Category: {talk?.category}</p>
         </article>
 
         <div className="talk-item__likes">
@@ -122,7 +122,7 @@ function TalkItem({ talk, ...props }) {
               />
               <span>{dislikeCount}</span>
             </button>
-            <FaReply /> {talk.totalComments}
+            <FaReply /> {talk?.totalComments}
           </p>
         </div>
       </div>
@@ -132,6 +132,7 @@ function TalkItem({ talk, ...props }) {
 
 TalkItem.propTypes = {
   talk: PropTypes.object,
+  authUser: PropTypes.string.isRequired,
 };
 
 export default TalkItem;

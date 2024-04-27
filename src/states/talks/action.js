@@ -6,20 +6,20 @@ const ActionType = {
     TOGGLE_LIKE_TALK: 'TOGGLE_LIKE_TALK',
   };
    
-  function receiveTalksActionCreator(talks) {
+  function receiveTalksActionCreator(talks, title,category, body) {
     return {
       type: ActionType.RECEIVE_TALKS,
       payload: {
-        talks,
+        talks,title,category, body
       },
     };
   }
    
-  function addTalkActionCreator(talk) {
+  function addTalkActionCreator(talk, title,category, body) {
     return {
       type: ActionType.ADD_TALK,
       payload: {
-        talk,
+        talk,title,category, body
       },
     };
   }
@@ -34,10 +34,10 @@ const ActionType = {
     };
   }
 
-  function asyncAddTalk({ text, replyTo = '' }) {
+  function asyncAddTalk({ title,category, body }) {
     return async (dispatch) => {
       try {
-        const talk = await api.createTalk({ text, replyTo });
+        const talk = await api.createTalk({ title,category, body });
         dispatch(addTalkActionCreator(talk));
       } catch (error) {
         alert(error.message);

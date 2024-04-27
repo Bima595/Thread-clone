@@ -15,7 +15,13 @@ function HomePage() {
   }, [dispatch]);
 
   const onAddTalk = (text) => {
-    dispatch(asyncAddTalk({ text }));
+    dispatch(
+      asyncAddTalk({
+        body: text.body,
+        category: text.category,
+        title: text.title,
+      })
+    );
   };
 
   const onLike = (id) => {

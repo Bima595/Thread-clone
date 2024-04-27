@@ -144,7 +144,7 @@ const api = (() => {
     const response = await fetch(`${BASE_URL}/threads/${id}`);
 
     const responseJson = await response.json();
-
+    console.log(responseJson);
     const { status, message } = responseJson;
 
     if (status !== "success") {
@@ -152,21 +152,22 @@ const api = (() => {
     }
 
     const {
-      data: { talkDetail },
+      data: { detailThread },
     } = responseJson;
 
-    return talkDetail;
+    return detailThread;
   }
 
-  async function createTalk({ text, replyTo = "" }) {
+  async function createTalk({ title, body, category = "" }) {
     const response = await _fetchWithAuth(`${BASE_URL}/threads`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        text,
-        replyTo,
+        title,
+        body,
+        category,
       }),
     });
 
@@ -175,14 +176,14 @@ const api = (() => {
     const { status, message } = responseJson;
 
     if (status !== "success") {
-      throw new Error(message);
+      throw new Error(message || "Failed to create thread");
     }
 
     const {
-      data: { talk },
+      data: { thread },
     } = responseJson;
 
-    return talk;
+    return thread;
   }
 
   // async function toggleLikeTalk(id) {

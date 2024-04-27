@@ -9,33 +9,47 @@ function TalkInput({ addTalk }) {
 
   function addtalk() {
     if (title.trim() && category.trim() && body.trim()) {
-      addTalk({ title, category, body });
+      addTalk({ title, body, category });
       setTitle('');
       setCategory('');
       setBody('');
     }
   }
 
-  function handleTextChange({ target }) {
-    if (target.name === 'title' && target.value.length <= 100) {
-      setTitle(target.value);
-    } else if (target.name === 'category') {
-      setCategory(target.value);
-    } else if (target.name === 'body' && target.value.length <= 320) {
-      setBody(target.value);
+  function handleTextChange(event) {
+    const { name, value } = event.target;
+    if (name === 'title') {
+      setTitle(value);
+    } else if (name === 'category') {
+      setCategory(value);
+    } else if (name === 'body') {
+      setBody(value);
     }
   }
 
   return (
     <div className="talk-input">
-      <input type="text" name="title" placeholder="Title" value={title} onChange={handleTextChange} />
-      <input type="text" name="category" placeholder="Category" value={category} onChange={handleTextChange} />
-      <textarea name="body" placeholder="What are you thinking?" value={body} onChange={handleTextChange} />
-      <p className="talk-input__char-left">
-        <strong>{body.length}</strong>
-        /320
-      </p>
-      <button type="submit" onClick={addtalk}>Talk</button>
+      <input
+        type="text"
+        name="title"
+        placeholder="Title"
+        value={title}
+        onChange={handleTextChange}
+      />
+      <input
+        type="text"
+        name="category"
+        placeholder="Category"
+        value={category}
+        onChange={handleTextChange}
+      />
+      <textarea
+        name="body"
+        placeholder="What are you thinking?"
+        value={body}
+        onChange={handleTextChange}
+      />
+      <button type="button" onClick={addtalk}>Talk</button>
     </div>
   );
 }

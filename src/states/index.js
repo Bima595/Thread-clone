@@ -12,7 +12,7 @@ const store = configureStore({
     // isPreload: isPreloadReducer,
     users: usersReducer,
     talks: talksReducer,
-    talkDetail: talkDetailReducer,
+    detailThread: talkDetailReducer,
     // loadingBar: loadingBarReducer,
   },
 });
