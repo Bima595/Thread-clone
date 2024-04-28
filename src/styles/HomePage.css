@@ -1,0 +1,94 @@
+.home-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .category-buttons {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .category-buttons button {
+    margin: 0 10px;
+    padding: 5px 10px;
+    background-color: #f0f0f0;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .category-buttons button:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .category-buttons button.active {
+    background-color: #ccc;
+  }
+  
+  .talks-list {
+    margin-top: 20px;
+  }
+  
+  .talks-list-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .talks-list-item:last-child {
+    border-bottom: none;
+  }
+  
+  .talks-list-item h3 {
+    margin-bottom: 5px;
+  }
+  
+  .talks-list-item p {
+    margin-bottom: 10px;
+  }
+  
+  .talks-list-item .user-info {
+    display: flex;
+    align-items: center;
+  }
+  
+  .talks-list-item img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  .talks-list-item .user-name {
+    font-weight: bold;
+  }
+  
+  .talks-list-item .timestamp {
+    color: #888;
+    font-size: 0.8em;
+  }
+  
+  .talk-input {
+    margin-bottom: 20px;
+  }
+  
+  .talk-input textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+    resize: none;
+  }
+  
+  .talk-input button {
+    padding: 5px 10px;
+    margin-left: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .talk-input button:hover {
+    background-color: #0056b3;
+  }
+  

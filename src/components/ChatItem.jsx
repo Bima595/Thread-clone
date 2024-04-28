@@ -2,14 +2,16 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 import { FaThumbsUp, FaThumbsDown, FaReply } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { formatDistanceToNow } from 'date-fns'; // Import function formatDistanceToNow from date-fns
+import { formatDistanceToNow } from "date-fns";
 import api from "../utils/api";
-
+import "../styles/ChatItem.css";
 function TalkItem({ talk, authUser, ...props }) {
   const isUserLike = talk?.upVotesBy?.includes(authUser);
   const isUserDislike = talk?.downVotesBy?.includes(authUser);
   const [likeCount, setLikeCount] = useState(talk?.upVotesBy?.length ?? 0);
-  const [dislikeCount, setDislikeCount] = useState(talk?.downVotesBy?.length ?? 0);
+  const [dislikeCount, setDislikeCount] = useState(
+    talk?.downVotesBy?.length ?? 0
+  );
   const [isLiked, setIsLiked] = useState(
     isUserLike || localStorage.getItem(`liked_${talk.id}`) === "true"
   );
@@ -17,7 +19,10 @@ function TalkItem({ talk, authUser, ...props }) {
     isUserDislike || localStorage.getItem(`disliked_${talk.id}`) === "true"
   );
   const [isNeutral, setIsNeutral] = useState(
-    !isUserLike && !isUserDislike && localStorage.getItem(`liked_${talk.id}`) !== "true" && localStorage.getItem(`disliked_${talk.id}`) !== "true"
+    !isUserLike &&
+      !isUserDislike &&
+      localStorage.getItem(`liked_${talk.id}`) !== "true" &&
+      localStorage.getItem(`disliked_${talk.id}`) !== "true"
   );
 
   const navigate = useNavigate();
@@ -89,8 +94,9 @@ function TalkItem({ talk, authUser, ...props }) {
     }
   };
 
-  // Format createdAt using formatDistanceToNow from date-fns
-  const createdAtFormatted = formatDistanceToNow(new Date(talk?.createdAt), { addSuffix: true });
+  const createdAtFormatted = formatDistanceToNow(new Date(talk?.createdAt), {
+    addSuffix: true,
+  });
 
   return (
     <div
@@ -102,25 +108,22 @@ function TalkItem({ talk, authUser, ...props }) {
       onKeyDown={keyPressHandler}
       {...props}
     >
-      <div className="talk-item__user-photo">
-        <img src={talk?.owner?.avatar} alt={talk?.owner?.avatar} />
-      </div>
       <div className="talk-item__detail">
         <header>
-          <div className="talk-item__user-info">
-            <p className="talk-item__user-name">{talk?.owner?.name}</p>
-            <p className="talk-item__user-id">{talk?.owner?.email}</p>
-          </div>
-          <p className="talk-item__created-at">{createdAtFormatted}</p> {/* Use formatted createdAt */}
+          <div className="talk-item__user-info"></div>
+          <p className="talk-item__created-at">{createdAtFormatted}</p>
         </header>
         <article>
           <h2>{talk?.title}</h2>
-          <p className="talk-item__text">{talk?.body}</p>
+          <p
+  className="talk-item__text"
+  dangerouslySetInnerHTML={{ __html: talk?.body }}
+/>
           <p>Category: {talk?.category}</p>
         </article>
 
         <div className="talk-item__likes">
-          <p>
+          <div>
             <button
               type="button"
               aria-label="like"
@@ -152,7 +155,10 @@ function TalkItem({ talk, authUser, ...props }) {
               <span>{dislikeCount}</span>
             </button>
             <FaReply /> {talk?.totalComments}
-          </p>
+            <div className="talk-item__user-name">
+              Dibuat oleh: <span>{talk?.ownerData?.name}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

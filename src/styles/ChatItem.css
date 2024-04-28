@@ -1,0 +1,66 @@
+.talk-item {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    cursor: pointer;
+  }
+  
+  .talk-item:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .talk-item__detail {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .talk-item__detail header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .talk-item__created-at {
+    color: #888;
+  }
+  
+  .talk-item__user-info {
+    display: flex;
+    align-items: center;
+  }
+  
+  .talk-item__user-info img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  .talk-item__likes {
+    display: flex;
+    align-items: center;
+  }
+  
+  .talk-item__likes button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+    
+    align-items: center;
+    margin-right: 10px;
+  }
+  
+  .talk-item__likes button span {
+    margin-left: 5px;
+  }
+  
+  .talk-item__user-name {
+    margin-top: 10px;
+  }
+  
+  .talk-item__user-name span {
+    font-weight: bold;
+  }
+  

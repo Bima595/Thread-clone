@@ -274,6 +274,23 @@ const api = (() => {
     }
   }
 
+  async function neutralizeCommentVote(threadId, commentId) {
+    const response = await _fetchWithAuth(
+      `${BASE_URL}/threads/${threadId}/comments/${commentId}/neutral-vote`,
+      {
+        method: "POST",
+      }
+    );
+
+    const responseJson = await response.json();
+
+    const { status, message } = responseJson;
+
+    if (status !== "success") {
+      throw new Error(message);
+    }
+  }
+
   async function neutralVote(threadId) {
     const response = await _fetchWithAuth(
       `${BASE_URL}/threads/${threadId}/neutral-vote`,
@@ -316,21 +333,32 @@ const api = (() => {
 
   async function getLeaderboards() {
     const response = await fetch(`${BASE_URL}/leaderboards`);
-
     const responseJson = await response.json();
-
+  
     const { status, message } = responseJson;
-
     if (status !== "success") {
       throw new Error(message);
     }
-
+  
     const {
       data: { leaderboards },
     } = responseJson;
+  
+    // Modifikasi data leaderboard untuk menyertakan informasi nama (name) dan avatar
+    const modifiedLeaderboards = leaderboards.map((leaderboard) => {
+      return {
+        id: leaderboard.id,
+        score: leaderboard.score,
+        name: leaderboard.user.name,
+        avatar: leaderboard.user.avatar,
+      };
+    });
 
-    return leaderboards;
+
+  
+    return modifiedLeaderboards;
   }
+  
 
   return {
     putAccessToken,
@@ -345,6 +373,7 @@ const api = (() => {
     getLeaderboards,
     createComment,
     neutralVote,
+    neutralizeCommentVote,
     downVoteComment,
     upVoteComment,
     getTalkDetail,

@@ -1,0 +1,64 @@
+.chat-item {
+    display: flex;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .chat-item__user-photo img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  .chat-item__detail {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .chat-item__user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  
+  .chat-item__user-name {
+    font-weight: bold;
+    margin-right: 5px;
+  }
+  
+  .chat-item__actions {
+    display: flex;
+    align-items: center;
+  }
+  
+  .chat-item__likes button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    padding: 0;
+  }
+  
+  .chat-item__created-at {
+    margin-top: 5px;
+    font-size: 12px;
+    color: #999;
+  }
+  
+  .chat-item__likes button:focus {
+    outline: none;
+  }
+  
+  .chat-item__likes button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: inline-block; /* Mengatur display menjadi inline-block */
+   margin-top: 15px;
+  }
+  

@@ -1,14 +1,14 @@
-import React from 'react';
+import 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { IoHome, IoMedal } from 'react-icons/io5'; 
 
 function Navigation({ authUser, signOut }) {
-  const { id, photo, name } = authUser;
+  const { id, avatar, name } = authUser;
 
   return (
     <div className="navigation">
-      <img src={photo} alt={id} title={name} />
+      <img src={avatar} alt={id} title={name} />
       <nav>
         <Link to="/"><IoHome /></Link>
         <Link to="/leaderboard"><IoMedal /></Link> 

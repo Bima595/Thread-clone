@@ -8,11 +8,14 @@ import RegisterPage from "./pages/RegisterPage";
 import { asyncPreloadProcess } from "./states/isPreload/action";
 import { asyncUnsetAuthUser } from "./states/authUser/action";
 import DetailPage from "./pages/DetailPage";
+import LeaderboardPage from "./pages/LeaderboardPage"; // Import LeaderboardPage
+
+const selectAuthUser = (state) => state.authUser;
+const selectIsPreload = (state) => state.isPreload;
 
 function App() {
-  const { authUser = null, isPreload = false } = useSelector(
-    (states) => states
-  );
+  const authUser = useSelector(selectAuthUser);
+  const isPreload = useSelector(selectIsPreload);
 
   const dispatch = useDispatch();
 
@@ -51,6 +54,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/threads/:id" element={<DetailPage />} />
+            <Route path="/leaderboard" element={<LeaderboardPage />} /> {/* Tambahkan rute ke LeaderboardPage */}
           </Routes>
         </main>
       </div>

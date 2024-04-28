@@ -4,9 +4,17 @@ import TalkInput from "../components/ChatInput";
 import TalksList from "../components/ChatList";
 import { asyncPopulateUsersAndTalks } from "../states/shared/action";
 import { asyncAddTalk } from "../states/talks/action";
+import "../styles/HomePage.css";
+
+const selectTalks = (state) => state.talks;
+const selectUsers = (state) => state.users;
+const selectAuthUser = (state) => state.authUser;
 
 function HomePage() {
-  const { talks = [], users = [], authUser } = useSelector((states) => states);
+  const talks = useSelector(selectTalks);
+  const users = useSelector(selectUsers);
+  const authUser = useSelector(selectAuthUser);
+
   const dispatch = useDispatch();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [categories, setCategories] = useState([]);

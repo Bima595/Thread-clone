@@ -4,6 +4,8 @@ const ActionType = {
   RECEIVE_TALK_DETAIL: "RECEIVE_TALK_DETAIL",
   CLEAR_TALK_DETAIL: "CLEAR_TALK_DETAIL",
   TOGGLE_LIKE_TALK_DETAIL: "TOGGLE_LIKE_TALK_DETAIL",
+  UPVOTE_COMMENT: "UPVOTE_COMMENT",
+  DOWNVOTE_COMMENT: "DOWNVOTE_COMMENT",
 };
 
 function receiveTalkDetailActionCreator(detailThread) {
@@ -31,12 +33,29 @@ function toggleLikeTalkDetailActionCreator(userId) {
   };
 }
 
+function upvoteCommentActionCreator(commentId) {
+  return {
+    type: ActionType.UPVOTE_COMMENT,
+    payload: {
+      commentId,
+    },
+  };
+}
+
+function downvoteCommentActionCreator(commentId) {
+  return {
+    type: ActionType.DOWNVOTE_COMMENT,
+    payload: {
+      commentId,
+    },
+  };
+}
+
 const asyncReceiveTalkDetail = (talkId) => {
   return async (dispatch) => {
     dispatch(clearTalkDetailActionCreator());
     try {
       const talkDetail = await api.getTalkDetail(talkId);
-      console.log(talkDetail);
       dispatch(receiveTalkDetailActionCreator(talkDetail));
     } catch (error) {
       console.log(error.message);
@@ -44,18 +63,38 @@ const asyncReceiveTalkDetail = (talkId) => {
   };
 };
 
-function asyncToogleLikeTalkDetail() {
-  return async (dispatch, getState) => {
-    const { authUser, talkDetail } = getState();
-    dispatch(toggleLikeTalkDetailActionCreator(authUser.id));
-
+const asyncUpvoteComment = (threadId, commentId) => {
+  return async (dispatch) => {
     try {
-      await api.toggleLikeTalk(talkDetail.id);
+      await api.upVoteComment(threadId, commentId);
+      dispatch(upvoteCommentActionCreator(commentId));
     } catch (error) {
-      alert(error.message);
+      console.log(error.message);
     }
   };
-}
+};
+
+const asyncDownvoteComment = (threadId, commentId) => {
+  return async (dispatch) => {
+    try {
+      await api.downVoteComment(threadId, commentId);
+      dispatch(downvoteCommentActionCreator(commentId));
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+};
+
+const asyncNeutralizeCommentVote = (threadId, commentId) => {
+  return async (dispatch) => {
+    try {
+      await api.neutralizeCommentVote(threadId, commentId);
+      dispatch(downvoteCommentActionCreator(commentId));
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+};
 
 export {
   ActionType,
@@ -63,5 +102,7 @@ export {
   clearTalkDetailActionCreator,
   toggleLikeTalkDetailActionCreator,
   asyncReceiveTalkDetail,
-  asyncToogleLikeTalkDetail,
+  asyncUpvoteComment,
+  asyncDownvoteComment,
+  asyncNeutralizeCommentVote,
 };
