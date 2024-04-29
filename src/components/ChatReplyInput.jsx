@@ -1,39 +1,28 @@
-import { useState } from 'react';
+import { useState } from "react";
 import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
+function ChatReplyInput({ replyTalk }) {
+  const [newComment, setNewComment] = useState("");
 
-function TalkReplyInput({ replyTalk }) {
-  const [text, setText] = useState('');
-  const navigate = useNavigate('/');
-
-  function replyTalkHandler() {
-    if (text.trim()) {
-      replyTalk(text);
-      setText('');
-      navigate('/');
-    }
-  }
-
-  function handleTextChange({ target }) {
-    if (target.value.length <= 320) {
-      setText(target.value);
-    }
-  }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (newComment.trim() === "") return;
+    replyTalk(newComment);
+    setNewComment("");
+  };
 
   return (
-    <div className="talk-reply-input">
-      <textarea type="text" placeholder="Talk your reply" value={text} onChange={handleTextChange} />
-      <p className="talk-reply-input__char-left">
-        <strong>{text.length}</strong>
-        /320
-      </p>
-      <button type="submit" onClick={replyTalkHandler}>Reply</button>
-    </div>
+    <form onSubmit={handleSubmit}>
+      <textarea
+        value={newComment}
+        onChange={(e) => setNewComment(e.target.value)}
+        placeholder="Write your comment..."
+      ></textarea>
+      <button type="submit">Submit</button>
+    </form>
   );
 }
 
-TalkReplyInput.propTypes = {
+ChatReplyInput.propTypes = {
   replyTalk: PropTypes.func.isRequired,
 };
-
-export default TalkReplyInput;
+export default ChatReplyInput;

@@ -115,11 +115,11 @@ function TalkItem({ talk, authUser, ...props }) {
         </header>
         <article>
           <h2>{talk?.title}</h2>
-          <p
-  className="talk-item__text"
-  dangerouslySetInnerHTML={{ __html: talk?.body }}
-/>
           <p>Category: {talk?.category}</p>
+          <p
+            className="talk-item__text"
+            dangerouslySetInnerHTML={{ __html: talk?.body }}
+          />
         </article>
 
         <div className="talk-item__likes">

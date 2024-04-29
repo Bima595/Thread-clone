@@ -2,7 +2,7 @@ import 'react';
 import { IoFlowerOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import LoginInput from '../components/loginInput'; // Ubah path sesuai dengan struktur proyek Anda
+import LoginInput from '../components/loginInput'; 
 import { asyncSetAuthUser } from '../states/authUser/action';
 
 function LoginPage() {
@@ -22,7 +22,7 @@ function LoginPage() {
         <div className="login-form">
           <h2>Login</h2>
           <LoginInput login={onLogin} />
-          <p>Don't have an account? <Link to="/register">Register Now</Link></p>
+          <p>Don&apos;t have an account? <Link to="/register">Register Now</Link></p>
         </div>
       </div>
     </div>

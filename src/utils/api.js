@@ -344,7 +344,6 @@ const api = (() => {
       data: { leaderboards },
     } = responseJson;
   
-    // Modifikasi data leaderboard untuk menyertakan informasi nama (name) dan avatar
     const modifiedLeaderboards = leaderboards.map((leaderboard) => {
       return {
         id: leaderboard.id,

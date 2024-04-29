@@ -4,7 +4,7 @@ const ActionType = {
   RECEIVE_TALKS: 'RECEIVE_TALKS',
   ADD_TALK: 'ADD_TALK',
   TOGGLE_LIKE_TALK: 'TOGGLE_LIKE_TALK',
-  ADD_COMMENT: 'ADD_COMMENT', // New action type for adding comment
+  ADD_COMMENT: 'ADD_COMMENT', 
 };
 
 function receiveTalksActionCreator(talks) {
@@ -45,6 +45,18 @@ function addCommentActionCreator(comment, talkId) {
   };
 }
 
+function asyncAddComment(talkId, content) {
+  return async (dispatch) => {
+    try {
+      const comment = await api.createComment({ talkId, content });
+      dispatch(addCommentActionCreator(comment, talkId));
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+}
+
+
 function asyncAddTalk({ title, category, body }) {
   return async (dispatch) => {
     try {
@@ -78,5 +90,6 @@ export {
   toggleLikeTalkActionCreator,
   asyncAddTalk,
   asyncToogleLikeTalk,
-  addCommentActionCreator
+  addCommentActionCreator,
+  asyncAddComment
 };

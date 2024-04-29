@@ -1,37 +1,24 @@
 import api from '../../utils/api';
 import { setAuthUserActionCreator } from '../authUser/action';
 
-const ActionType = {
-    SET_IS_PRELOAD: 'SET_IS_PRELOAD',
-  };
-   
-  function setIsPreloadActionCreator(isPreload) {
-    return {
-      type: ActionType.SET_IS_PRELOAD,
-      payload: {
-        isPreload,
-      },
-    };
-  }
+export const SET_IS_PRELOAD = "SET_IS_PRELOAD";
 
-  function asyncPreloadProcess() {
-    return async (dispatch) => {
-      try {
-        // preload process
-        const authUser = await api.getOwnProfile();
-        dispatch(setAuthUserActionCreator(authUser));
-      } catch (error) {
-        // fallback process
-        dispatch(setAuthUserActionCreator(null));
-      } finally {
-        // end preload process
-        dispatch(setIsPreloadActionCreator(false));
-      }
-    };
-  }
+export const setIsPreload = (isPreload) => ({
+  type: SET_IS_PRELOAD,
+  payload: {
+    isPreload,
+  },
+});
 
-  export {
-    ActionType,
-    setIsPreloadActionCreator,
-    asyncPreloadProcess,
+export const asyncPreloadProcess = () => {
+  return async (dispatch) => {
+    try {
+      const authUser = await api.getOwnProfile();
+      dispatch(setAuthUserActionCreator(authUser));
+    } catch (error) {
+      dispatch(setAuthUserActionCreator(null));
+    } finally {
+      dispatch(setIsPreload(false));
+    }
   };
+};

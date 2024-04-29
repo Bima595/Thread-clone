@@ -13,10 +13,14 @@ function talkDetailReducer(detailThread = null, action = {}) {
           ? detailThread.likes.filter((id) => id !== action.payload.userId)
           : detailThread.likes.concat(action.payload.userId),
       };
+    case ActionType.CREATE_COMMENT:
+      return {
+        ...detailThread,
+        comments: detailThread.comments.concat(action.payload.comment),
+      };
     default:
       return detailThread;
   }
 }
-
 
 export default talkDetailReducer;

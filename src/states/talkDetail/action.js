@@ -6,7 +6,30 @@ const ActionType = {
   TOGGLE_LIKE_TALK_DETAIL: "TOGGLE_LIKE_TALK_DETAIL",
   UPVOTE_COMMENT: "UPVOTE_COMMENT",
   DOWNVOTE_COMMENT: "DOWNVOTE_COMMENT",
+  CREATE_COMMENT: "CREATE_COMMENT", 
 };
+
+
+function createCommentActionCreator(comment) {
+  return {
+    type: ActionType.CREATE_COMMENT,
+    payload: {
+      comment,
+    },
+  };
+}
+
+const asyncCreateComment = (threadId, content) => {
+  return async (dispatch) => {
+    try {
+      const newComment = await api.createComment(threadId, content);
+      dispatch(createCommentActionCreator(newComment));
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+};
+
 
 function receiveTalkDetailActionCreator(detailThread) {
    
@@ -56,6 +79,7 @@ const asyncReceiveTalkDetail = (talkId) => {
     dispatch(clearTalkDetailActionCreator());
     try {
       const talkDetail = await api.getTalkDetail(talkId);
+      console.log(talkDetail.comments);
       dispatch(receiveTalkDetailActionCreator(talkDetail));
     } catch (error) {
       console.log(error.message);
@@ -105,4 +129,5 @@ export {
   asyncUpvoteComment,
   asyncDownvoteComment,
   asyncNeutralizeCommentVote,
+  asyncCreateComment,
 };

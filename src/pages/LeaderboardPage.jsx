@@ -22,7 +22,7 @@ function LeaderboardPage() {
       <h1>Leaderboard</h1>
       <ul>
         {leaderboards.map((leaderboard) => (
-          <li key={leaderboard.id}>
+          <li key={`${leaderboard.id}-${leaderboard.name}`}>
             <img src={leaderboard.avatar} alt={leaderboard.name} />
             <span>{leaderboard.name}</span>
             <span>{leaderboard.score}</span>

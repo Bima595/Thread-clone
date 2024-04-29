@@ -1,12 +1,15 @@
-import { ActionType } from './action';
- 
-function isPreloadReducer(isPreload = true, action = {}) {
+const initialState = {
+  isLoading: false,
+};
+
+export default function loadingReducer(state = initialState, action) {
   switch (action.type) {
-    case ActionType.SET_IS_PRELOAD:
-      return action.payload.isPreload;
+    case 'SET_LOADING':
+      return {
+        ...state,
+        isLoading: action.payload,
+      };
     default:
-      return isPreload;
+      return state;
   }
 }
- 
-export default isPreloadReducer;
