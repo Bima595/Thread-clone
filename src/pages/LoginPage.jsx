@@ -2,14 +2,29 @@ import 'react';
 import { IoFlowerOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import LoginInput from '../components/loginInput'; 
+import LoginInput from '../components/LoginInput'; 
 import { asyncSetAuthUser } from '../states/authUser/action';
+import { toast } from 'react-hot-toast'; // Import react-hot-toast
 
 function LoginPage() {
   const dispatch = useDispatch();
 
   const onLogin = ({ email, password }) => {
-    dispatch(asyncSetAuthUser({ email, password }));
+    dispatch(asyncSetAuthUser({ email, password }))
+      .then(() => {
+        // Jika login berhasil, tampilkan notifikasi
+        toast.success('Login successful!', {
+          duration: 4000,
+          position: 'top-center',
+        });
+      })
+      .catch(() => {
+        // Jika login gagal, tampilkan notifikasi dengan pesan error
+        toast.error(`Login failed !!!`, {
+          duration: 4000,
+          position: 'top-center',
+        });
+      });
   };
 
   return (
