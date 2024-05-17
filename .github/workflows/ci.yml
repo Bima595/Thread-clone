@@ -19,3 +19,4 @@ jobs:
         run: |
          yarn install
           yarn run ci:test
+          yarn run e2e
