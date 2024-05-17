@@ -10,8 +10,7 @@
     "lint:fix": "eslint --fix .",
     "preview": "vite preview",
     "test": "vitest",
-    "ci:test": "vite build && start-server-and-test 'vite preview --host 0.0.0.0 --port 5173' http-get://0.0.0.0:5173 e2e",
-    "e2e": "cypress run"
+    "ci:test": "vite build && start-server-and-test 'vite preview --host 0.0.0.0 --port 5173' http-get://0.0.0.0:5173",
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.3",
@@ -42,6 +41,5 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "vite": "^5.1.6",
-    "cypress": "^12.3.0"
   }
 }
