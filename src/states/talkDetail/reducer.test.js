@@ -1,5 +1,3 @@
-// src/states/talks/talkDetailReducer.test.js
-
 import { describe, it, expect } from 'vitest';
 import talkDetailReducer from './reducer';
 import { ActionType } from './action';
