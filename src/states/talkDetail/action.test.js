@@ -1,5 +1,3 @@
-// createCommentActionCreator.test.js
-
 import { describe, it, expect } from 'vitest';
 import { createCommentActionCreator, ActionType } from './action';
 
