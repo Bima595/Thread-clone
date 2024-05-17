@@ -10,7 +10,7 @@
     "lint:fix": "eslint --fix .",
     "preview": "vite preview",
     "test": "vitest",
-    "ci:test": "vite build && start-server-and-test 'vite preview --host 0.0.0.0 --port 5173' http-get://0.0.0.0:5173 e2e"
+    "ci:test": "vite build && start-server-and-test 'vite preview --host 0.0.0.0 --port 5173' http-get://0.0.0.0:5173 e2e",
     "e2e": "cypress run"
   },
   "dependencies": {
