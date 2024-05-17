@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import LoginInput from '../components/LoginInput'; 
 import { asyncSetAuthUser } from '../states/authUser/action';
-import { toast } from 'react-hot-toast'; // Import react-hot-toast
+import { toast } from 'react-hot-toast'; 
 
 function LoginPage() {
   const dispatch = useDispatch();

@@ -9,7 +9,7 @@ function asyncPopulateUsersAndTalks() {
       const talks = await api.getAllTalks();
  
       dispatch(receiveUsersActionCreator(users));
-      dispatch(receiveTalksActionCreator(talks));
+
     } catch (error) {
       alert(error.message);
     }
