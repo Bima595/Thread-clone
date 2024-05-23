@@ -68,7 +68,7 @@ function App() {
         </header>
         <main>
           <Routes>
-            <Route path="/Homepage" element={<HomePage />} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/threads/:id" element={<DetailPage />} />
             <Route path="/leaderboard" element={<LeaderboardPage />} />
           </Routes>
