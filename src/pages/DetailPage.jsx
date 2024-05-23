@@ -107,13 +107,12 @@ function DetailPage() {
       )
     : [];
 
-    const formatTimeDistance = (date) => {
-      if (!isValid(new Date(date))) {
-        return 'Invalid Date';
-      }
-      return formatDistanceToNow(new Date(date), { addSuffix: true });
-    };
-    
+  const formatTimeDistance = (date) => {
+    if (!isValid(new Date(date))) {
+      return "Invalid Date";
+    }
+    return formatDistanceToNow(new Date(date), { addSuffix: true });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -133,7 +132,7 @@ function DetailPage() {
               thread={{ ...detailThread, comments: [] }}
               authUser={authUser.name}
             />
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="comment-form">
               <textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target?.value)}
@@ -149,7 +148,7 @@ function DetailPage() {
             {showComments && (
               <div className="detail-page__comments-list">
                 {sortedComments.map((comment, index) => (
-                  <div key={comment?.id||index } className="comment-item">
+                  <div key={comment?.id || index} className="comment-item">
                     <div className="comment-avatar">
                       <img src={comment?.owner.avatar} alt="Avatar" />
                     </div>

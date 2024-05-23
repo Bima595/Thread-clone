@@ -17,5 +17,5 @@ jobs:
           node-version: v18.18.2
       - name: npm install and test
         run: |
-          npm install
-          npm run ci:test
+         yarn install
+          yarn run ci:test
